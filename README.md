@@ -1,73 +1,59 @@
-# Mapillary Bulk Downloader
+# mapillary-dl
 
-A CLI tool for downloading street-level imagery from [Mapillary](https://www.mapillary.com/) at city scale. Define a bounding box, discover every available image inside it, and download them all — with GPS coordinates embedded in EXIF, resumable downloads, and a SQLite-backed discovery cache that makes re-runs instant.
+CLI tool to bulk-download street-level imagery from [Mapillary](https://www.mapillary.com/). Define a bounding box or pick a city, and it discovers and downloads every available image — with GPS embedded in EXIF, resumable downloads, and a SQLite cache that makes re-runs instant.
 
-Built to collect training data for 3D city reconstruction (COLMAP + Gaussian Splatting), where you need tens of thousands of geo-tagged street photos covering contiguous areas.
-
-## What it does
-
-1. **Discover** — Splits a bounding box into a grid, queries every cell in parallel (30 workers), and recursively subdivides cells that hit the API limit. Finds every image Mapillary has in the area.
-2. **Cache** — Stores all discovered image IDs and coordinates in a local SQLite database (`images.db`). Subsequent runs skip the API entirely unless you ask to re-discover.
-3. **Download** — Pulls images at 2048px resolution with progress bars. Embeds GPS lat/lon into JPEG EXIF so each file is self-contained. Tracks what's been downloaded with atomic SQLite writes, so you can interrupt and resume at any time.
-
-## Quick start
+## Install
 
 ```bash
-# Install dependencies
-uv sync
+pip install mapillary-dl
+```
 
-# Set your Mapillary API token
-echo 'MAPILLARY_CLIENT_TOKEN=MLY|...' > .env
+## Setup
 
-# Interactive mode — pick a city, preview the area on a map, then download
-uv run python3 cli.py
+Get a client token from [mapillary.com/dashboard/developers](https://www.mapillary.com/dashboard/developers) and export it:
 
-# Or go headless
-uv run python3 cli.py --city "San Francisco"
-uv run python3 cli.py --bbox "-122.52,37.70,-122.35,37.83" --limit 500
+```bash
+export MAPILLARY_CLIENT_TOKEN=MLY|...
 ```
 
 ## Usage
 
-```
-uv run python3 cli.py [OPTIONS]
+```bash
+# Interactive mode — pick a city, then download
+mapillary-dl
 
-Options:
-  --city NAME           Download from a predefined city
-  --bbox W,S,E,N        Custom bounding box (overrides --city)
-  --limit N             Cap the number of images to download
-  --output-dir PATH     Output directory (default: data/<city>)
-  --preview             Open an interactive map in the browser before downloading
-  --state STATE         Discovery state when resuming: maintain | merge | rediscover
-  --no-save-discovery   Don't persist discovered IDs to the database
-  --list-cities         Show predefined cities and exit
-```
+# Specify a city directly
+mapillary-dl --city "San Francisco"
 
-**No arguments** launches interactive mode: arrow-key city selection, optional map preview via [Folium](https://python-visualization.github.io/folium/), discovery summary, and a confirmation prompt before downloading.
+# Custom bounding box
+mapillary-dl --bbox "-122.52,37.70,-122.35,37.83"
 
-### Discovery states
+# Limit images (useful for testing)
+mapillary-dl --city "New York" --limit 100
 
-When an `images.db` already exists for a city:
-
-| State | Behavior |
-|-------|----------|
-| `maintain` | Load from DB, skip API calls (default) |
-| `merge` | Re-discover and add any new images to the existing DB |
-| `rediscover` | Wipe the DB and run a full fresh discovery |
-
-## Architecture
-
-```
-cli.py          — CLI entry point: argparse, interactive prompts, map preview
-downloader.py   — MapillaryClient (API) + ImageDownloader (grid split, parallel discovery, download loop)
-database.py     — DiscoveryDB: SQLite cache with singleton pattern, tracks discovered/downloaded state
-config.py       — Dataclasses (MapillaryConfig, BoundingBox), env loading, predefined city bounding boxes
-scripts/        — Standalone utilities (GPS coordinate enrichment)
+# Show available cities
+mapillary-dl --list-cities
 ```
 
-## Key design decisions
+## Options
 
-- **Adaptive grid splitting**: The API caps results at 2,000 per query. Dense urban areas easily exceed that. The downloader starts with coarse grid cells and recursively subdivides any cell that saturates the limit, down to a minimum cell size. This guarantees complete coverage without manual tuning.
-- **SQLite over JSON**: Early versions used `download_metadata.json`. Switched to SQLite for atomic writes (no corruption on Ctrl+C), fast set-membership lookups on 100k+ image IDs, and clean separation of discovery vs. download state.
-- **GPS in EXIF**: Coordinates are embedded directly into each JPEG at download time. This means images work standalone — no sidecar files, no separate metadata lookup. Precision is normalized to 7 decimal places (~1 cm) so DB and EXIF values match exactly.
-- **Disk reconciliation**: On resume, the downloader checks what's actually on disk (not just what the DB says) and reconciles the two. Images on disk missing GPS get coordinates embedded; images in the DB but missing from disk get re-queued.
+| Option | Description |
+|--------|-------------|
+| `--city NAME` | Download from a predefined city |
+| `--bbox W,S,E,N` | Custom bounding box |
+| `--limit N` | Cap the number of images to download |
+| `--output-dir PATH` | Output directory (default: `data/<city>`) |
+| `--preview` | Open an interactive map in the browser before downloading |
+| `--state STATE` | Resume behaviour: `maintain` \| `merge` \| `rediscover` |
+| `--granularity 1-100` | Discovery thoroughness (default: 25) |
+| `--list-cities` | Show predefined cities and exit |
+
+## Discovery states
+
+When a previous run exists for a city:
+
+| State | Behaviour |
+|-------|-----------|
+| `maintain` | Load from cache, skip API (default) |
+| `merge` | Re-discover and add new images to existing cache |
+| `rediscover` | Wipe cache and run a full fresh discovery |
