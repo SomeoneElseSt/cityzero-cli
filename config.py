@@ -11,11 +11,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Project root directory
-PROJECT_ROOT = Path(__file__).parent.parent
-
-# Data directory
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = Path.cwd() / "mapillary-dl-data"
 
 # Normalizes DB and EXIF coords to the same precision so == comparisons work exactly.
 # 10^7 = 7 decimal places (~1cm); fits in uint32 for both lat and lon.

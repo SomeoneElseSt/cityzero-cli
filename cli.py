@@ -243,9 +243,8 @@ def show_download_summary(
             if len(coords) >= 2:
                 heat_coords.append([coords[1], coords[0]])
     if show_preview:
-        print(f"\n📍 Generating coverage map...")
+        print(f"\n📍 Generating coverage map for {location_name}. Opening in browser...")
         coverage_map = generate_map_preview(bbox, location_name, heat_coords)
-        print(f"   Opening in browser: {coverage_map}")
         webbrowser.open(f"file://{coverage_map}")
 
     if save_to_db:
@@ -316,9 +315,8 @@ def interactive_mode(show_preview: bool = True) -> tuple[BoundingBox, str]:
         bbox = get_bbox_for_city(selected)
 
     if show_preview:
-        print(f"\n📍 Generating map preview for {location_name}...")
+        print(f"\n📍 Generating map preview for {location_name}. Opening in browser...")
         map_file = generate_map_preview(bbox, location_name)
-        print(f"   Opening in browser: {map_file}")
         webbrowser.open(f"file://{map_file}")
 
     return bbox, location_name
@@ -419,9 +417,8 @@ Examples:
         location_name = args.city
 
     if not is_interactive and args.preview and show_preview:
-        print(f"\n📍 Generating map preview...")
+        print(f"\n📍 Generating map preview for {location_name}. Opening in browser...")
         map_file = generate_map_preview(bbox, location_name)
-        print(f"   Opening in browser: {map_file}")
         webbrowser.open(f"file://{map_file}")
         input("\nPress Enter to continue...")
 
@@ -433,7 +430,7 @@ Examples:
             args.output_dir = DATA_DIR / normalized
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    print(f"📁 Output: {args.output_dir}")
+    print(f"📁 Working directory: {args.output_dir}")
 
     client = _client
     downloader = ImageDownloader(client, output_dir=args.output_dir / "images")
