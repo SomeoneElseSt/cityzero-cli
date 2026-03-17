@@ -439,7 +439,7 @@ class ImageDownloader:
         print(f"\n📥 Downloading {len(images_to_download)} images...")
         print(f"   Resolution: {MAX_RESOLUTION}px")
         print(f"   Output: {self.output_dir}")
-        print(f"   Time estimates refresh every {update_interval} images")
+        print(f"   Time estimates refresh every {update_interval} downloaded images")
 
         success_count = 0
         failed_count = 0
@@ -449,7 +449,8 @@ class ImageDownloader:
         with ThreadPoolExecutor(max_workers=DOWNLOAD_WORKERS) as executor:
             futures = {executor.submit(self.download_single, img): img for img in images_to_download}
             batch = []
-            with tqdm(total=len(images_to_download), desc="Downloading", unit="img") as pbar:
+            bar_fmt = "{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}{postfix}]"
+            with tqdm(total=len(images_to_download), desc="Downloading", unit="img", bar_format=bar_fmt) as pbar:
                 for future in as_completed(futures):
                     result = future.result()
                     status = result[0]
@@ -457,16 +458,19 @@ class ImageDownloader:
                         failed_count += 1
                     batch.append(result)
                     completed += 1
-                    pbar.n = completed
+                    pbar.update(1)
                     if completed % update_interval == 0:
-                        pbar.refresh()
-                        pbar.set_postfix({"failed": failed_count})
+                        d = pbar.format_dict
+                        rate = d["rate"]
+                        rate_str = f"{rate:.2f}img/s" if rate else "?img/s"
+                        remaining = (d["total"] - d["n"]) / rate if rate else 0
+                        remaining_str = pbar.format_interval(remaining)
+                        pbar.set_postfix_str(f"<{remaining_str}, {rate_str}, failed={failed_count}")
                     if len(batch) >= DB_COMMIT_BATCH:
                         s, sk = self.flush_batch(batch, db, db_lock)
                         success_count += s
                         skipped_count += sk
                         batch.clear()
-                pbar.update(pbar.total - pbar.n)
             if batch:
                 s, sk = self.flush_batch(batch, db, db_lock)
                 success_count += s
