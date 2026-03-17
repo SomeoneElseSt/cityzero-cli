@@ -17,6 +17,19 @@ DATA_DIR = Path.cwd()
 # 10^7 = 7 decimal places (~1cm); fits in uint32 for both lat and lon.
 GPS_COORD_PRECISION = 10_000_000
 
+# Downloader / API constants
+MAX_RESOLUTION = 2048
+API_IMAGE_LIMIT = 2000
+# Note: 40 and 40 workers were found to be empirically fastest without running into I/O limits
+# Feel free to increment until whatever your system can handle
+DISCOVERY_WORKERS = 40
+DOWNLOAD_WORKERS = 40
+DB_COMMIT_BATCH = 50
+DISCOVERY_STALENESS_DAYS = 21
+GRANULARITY_MIN = 1
+GRANULARITY_MAX = 100
+GRANULARITY_DEFAULT = 25
+
 
 @dataclass
 class MapillaryConfig:
@@ -56,11 +69,6 @@ def get_mapillary_config() -> MapillaryConfig | None:
     if not token:
         return None
     return MapillaryConfig(client_token=token)
-
-
-GRANULARITY_MIN = 1
-GRANULARITY_MAX = 100
-GRANULARITY_DEFAULT = 25
 
 
 @dataclass
