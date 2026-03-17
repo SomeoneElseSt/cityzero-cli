@@ -449,8 +449,10 @@ class ImageDownloader:
         with ThreadPoolExecutor(max_workers=DOWNLOAD_WORKERS) as executor:
             futures = {executor.submit(self.download_single, img): img for img in images_to_download}
             batch = []
-            bar_fmt = "{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}{postfix}]"
-            with tqdm(total=len(images_to_download), desc="Downloading", unit="img", bar_format=bar_fmt) as pbar:
+            def make_bar_fmt(remaining="?", rate="?img/s", failed=0):
+                return f"{{l_bar}}{{bar}}| {{n_fmt}}/{{total_fmt}} [{{elapsed}}<{remaining}, {rate}, failed={failed}]"
+
+            with tqdm(total=len(images_to_download), desc="Downloading", unit="img", bar_format=make_bar_fmt()) as pbar:
                 for future in as_completed(futures):
                     result = future.result()
                     status = result[0]
@@ -464,8 +466,7 @@ class ImageDownloader:
                         rate = d["rate"]
                         rate_str = f"{rate:.2f}img/s" if rate else "?img/s"
                         remaining = (d["total"] - d["n"]) / rate if rate else 0
-                        remaining_str = pbar.format_interval(remaining)
-                        pbar.set_postfix_str(f"<{remaining_str}, {rate_str}, failed={failed_count}")
+                        pbar.bar_format = make_bar_fmt(pbar.format_interval(remaining), rate_str, failed_count)
                     if len(batch) >= DB_COMMIT_BATCH:
                         s, sk = self.flush_batch(batch, db, db_lock)
                         success_count += s
