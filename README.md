@@ -44,7 +44,7 @@ mapillary-dl --list-cities
 | `--city NAME` | Download from a predefined city |
 | `--bbox W,S,E,N` | Custom bounding box |
 | `--limit N` | Cap the number of images to download |
-| `--output-dir PATH` | Output directory (default: `data/<city>`) |
+| `--output-dir PATH` | Output directory (default: `<city>` or `bbox#` in current directory) |
 | `--preview` | Open an interactive map in the browser before downloading |
 | `--state STATE` | Resume behaviour: `maintain` \| `merge` \| `rediscover` |
 | `--granularity 1-100` | Discovery thoroughness (default: 25) |
