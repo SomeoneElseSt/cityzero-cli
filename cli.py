@@ -36,6 +36,7 @@ Usage:
 import argparse
 import atexit
 import sys
+import time
 import tempfile
 import webbrowser
 from datetime import datetime, timezone
@@ -289,6 +290,7 @@ def show_download_summary(
     if show_preview:
         print(f"\n📍 Generating coverage heatmap for {location_name}. Opening in browser...")
         coverage_map = generate_map_preview(bbox, location_name, heat_coords)
+        time.sleep(1.2)
         webbrowser.open(f"file://{coverage_map}")
 
     if save_to_db:
@@ -314,7 +316,7 @@ def show_download_summary(
 def prompt_granularity() -> int:
     """Prompt user for discovery granularity (1–100) with guidance."""
     print(f"\n📐 Discovery granularity: how many cells to split the search area into ({GRANULARITY_MIN}=fast, {GRANULARITY_MAX}=max)")
-    print(f"   Low values work best with smaller bounding boxes.")
+    print(f"   Low values work best with bigger areas.")
     print(f"   At 80+ for large areas, expect hours to days of discovery.")
 
     raw = ask_or_exit(questionary.text(
@@ -341,7 +343,7 @@ def interactive_mode(show_preview: bool = True) -> tuple[BoundingBox, str]:
     sp = " " * w
 
     # visible char counts must equal w (45)
-    t1 = f"  {A}◆ CityZero Image Downloader{R}" + " " * 16       # 29 vis
+    t1 = f"  {A}◆ CityZero{R}" + " " * 33       # 12 vis
     d1 = f"  {T}Download open-source images{R}" + " " * 16        # 29 vis
     d2 = f"  {T}of the world from Mapillary \u2014 fast.{R}" + " " * 8  # 37 vis
 
@@ -367,7 +369,7 @@ def interactive_mode(show_preview: bool = True) -> tuple[BoundingBox, str]:
 
     if selected == "Custom bounding box...":
         bbox_str = ask_or_exit(questionary.text(
-            "Enter bounding box (west,south,east,north):",
+            "Enter bounding box coordinates (west, south, east, north):",
         ))
 
         bbox = BoundingBox.from_string(bbox_str)
@@ -382,6 +384,7 @@ def interactive_mode(show_preview: bool = True) -> tuple[BoundingBox, str]:
     if show_preview:
         print(f"\n📍 Generating map preview for {location_name}. Opening in browser...")
         map_file = generate_map_preview(bbox, location_name)
+        time.sleep(1.2)
         webbrowser.open(f"file://{map_file}")
 
     return bbox, location_name
@@ -492,6 +495,7 @@ Examples:
     if not is_interactive and args.preview and show_preview:
         print(f"\n📍 Generating map preview for {location_name}. Opening in browser...")
         map_file = generate_map_preview(bbox, location_name)
+        time.sleep(1.2)
         webbrowser.open(f"file://{map_file}")
         input("\nPress Enter to continue...")
 
