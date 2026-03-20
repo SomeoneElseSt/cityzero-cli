@@ -1,4 +1,4 @@
-# mapillary-dl
+# cityzero
 
 ![CityZero city selection screen](public/example-1.png)
 
@@ -9,7 +9,7 @@ CLI tool to bulk-download street-level imagery from [Mapillary](https://www.mapi
 ## Install
 
 ```bash
-pip install mapillary-dl
+pip install cityzero
 ```
 
 ## Setup
@@ -24,19 +24,19 @@ export MAPILLARY_CLIENT_TOKEN=MLY|...
 
 ```bash
 # Interactive mode — pick a city, then download
-mapillary-dl
+cityzero
 
 # Specify a city directly
-mapillary-dl --city "San Francisco"
+cityzero --city "San Francisco"
 
 # Custom bounding box
-mapillary-dl --bbox "-122.52,37.70,-122.35,37.83"
+cityzero --bbox "-122.52,37.70,-122.35,37.83"
 
 # Limit images (useful for testing)
-mapillary-dl --city "New York" --limit 100
+cityzero --city "New York" --limit 100
 
 # Show available cities
-mapillary-dl --list-cities
+cityzero --list-cities
 ```
 
 ## Options

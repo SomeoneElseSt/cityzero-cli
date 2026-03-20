@@ -3,34 +3,34 @@
 
 Usage:
     # Interactive mode (no arguments)
-    uv run python3 cli.py
+    cityzero
 
     # Non-interactive: specify city by name
-    uv run python3 cli.py --city "New York"
+    cityzero --city "New York"
 
     # Non-interactive: custom bounding box
-    uv run python3 cli.py --bbox "-122.52,37.70,-122.35,37.83"
+    cityzero --bbox "-122.52,37.70,-122.35,37.83"
 
     # With image limit (for testing)
-    uv run python3 cli.py --city "San Francisco" --limit 100
+    cityzero --city "San Francisco" --limit 100
 
     # Show map preview (off by default)
-    uv run python3 cli.py --city "San Francisco" --preview
+    cityzero --city "San Francisco" --preview
 
     # Resume without re-hitting API (default when images.db exists)
-    uv run python3 cli.py --city "San Francisco" --state maintain
+    cityzero --city "San Francisco" --state maintain
 
     # Re-discover and merge new images into existing DB
-    uv run python3 cli.py --city "San Francisco" --state merge
+    cityzero --city "San Francisco" --state merge
 
     # Wipe DB and discover fresh
-    uv run python3 cli.py --city "San Francisco" --state rediscover
+    cityzero --city "San Francisco" --state rediscover
 
     # Fine-grained discovery (finds more images, much slower)
-    uv run python3 cli.py --city "San Francisco" --granularity 80
+    cityzero --city "San Francisco" --granularity 80
 
     # Show available cities
-    uv run python3 cli.py --list-cities
+    cityzero --list-cities
 """
 
 import argparse
@@ -398,22 +398,25 @@ def main():
         epilog="""
 Examples:
   Interactive mode (recommended):
-    mapillary-dl
+    cityzero
 
   Non-interactive: specify city by name:
-    mapillary-dl --city "New York"
+    cityzero --city "New York"
 
   Non-interactive: custom bounding box:
-    mapillary-dl --bbox "-74.05,40.68,-73.91,40.88"
+    cityzero --bbox "-74.05,40.68,-73.91,40.88"
 
   Limit download for testing:
-    mapillary-dl --city "San Francisco" --limit 50
+    cityzero --city "San Francisco" --limit 50
+
+  Preview download area in browser:
+    cityzero --city "San Francisco" --preview
 
   Specify output directory:
-    mapillary-dl --output-dir data/sf_images
+    cityzero --output-dir data/sf_images
 
   Show available cities:
-    mapillary-dl --list-cities
+    cityzero --list-cities
         """
     )
 
