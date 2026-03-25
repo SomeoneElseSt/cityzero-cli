@@ -2,7 +2,7 @@
 
 ![CityZero city selection screen](public/example-1.png)
 
-CLI tool to bulk-download street-level imagery from [Mapillary](https://www.mapillary.com/) fast. You can define a bounding box or pick a city, and it discovers and downloads every available image of that area, with GPS embedded in EXIF, resumable downloads, and a SQLite-based cache for easy re-runs and fault resistance to interruptions.
+CLI tool to bulk-download street-level imagery from [Mapillary](https://www.mapillary.com/) at the biggest scales. Define a bounding box or pick a city and it discovers and downloads every available image in that area: upwards of 1–4 million images per major city, or 10–100k for individual neighbourhoods. GPS is embedded in EXIF, and downloads are resumable and fault-tolerant upon interruption thanks to a SQLite-based cache.
 
 > This tool was spun off from [CityZero](https://github.com/SomeoneElseSt/CityZero/tree/master/mapillary), where its original commit history can be found.
 
