@@ -34,6 +34,7 @@ Usage:
 """
 
 import argparse
+import hashlib
 import re
 import atexit
 import sys
@@ -63,23 +64,47 @@ def ask_or_exit(question):
     return answer
 
 
-def next_bbox_dir(cwd: Path) -> Path:
+_SLUG_WORDS = [
+    "acid","agate","amber","anvil","arch","ark","ash","axe",
+    "badge","bark","basalt","bay","beam","birch","blade","bloom",
+    "bolt","bone","boulder","brace","braid","branch","brass","brick",
+    "bridge","brine","bronze","brook","brush","bulwark","cairn","cape",
+    "carbon","cave","cedar","chalk","chart","chest","chrome","cinder",
+    "circuit","cliff","cloak","cloud","coal","coast","cobalt","coil",
+    "compass","copper","coral","cord","core","crag","crane","crater",
+    "creek","crest","crown","crystal","current","dart","dawn","delta",
+    "depth","dew","dome","drift","dusk","dust","dye","echo",
+    "edge","ember","epoch","fang","fell","fen","fern","field",
+    "fig","film","fjord","flare","flint","flood","flow","foam",
+    "fold","forge","fork","fort","frost","fuel","gale","gap",
+    "gate","gem","gild","glacier","glade","glow","gorge","grain",
+    "granite","grove","gulf","haze","heath","helm","hemp","hill",
+    "hive","hollow","hook","horizon","hull","ice","inlet","iron",
+    "island","jade","jasper","jet","keep","kelp","key","knot",
+    "larch","lava","leaf","ledge","lens","lime","link","loch",
+    "lode","loop","lumen","magma","mantle","maple","marble","marsh",
+    "mast","mesa","mesh","mist","moat","moor","mortar","moss",
+    "mount","mud","nacre","needle","node","north","notch","oak",
+    "opal","orbit","ore","outcrop","pale","pass","patch","peak",
+    "peat","pine","pitch","pivot","plain","plume","pool","port",
+    "prism","probe","pulse","quartz","rail","range","rapid","reef",
+    "relay","ridge","rift","rim","river","rock","root","rope",
+    "ruin","rush","rust","salt","sand","scarp","schist","scree",
+    "seal","seam","shelf","shale","shore","silt","sinew","slab",
+    "slate","slope","smoke","soil","span","spire","spool","spur",
+    "stack","staff","stave","steel","stem","step","stone","storm",
+    "strand","stream","strut","summit","surge","swamp","sweep","swift",
+    "tarn","thorn","tide","timber","tine","tor","trace","trail",
+    "trench","tundra","vale","vault","vein","vent","verge","void",
+    "wake","wave","weld","whirl","wind","wire","wood","zinc",
+]
 
-    """Return cwd/bboxN where N is the next available number.
-
-    Scans cwd for existing bbox1, bbox2, ... folders and returns the next
-    unused number.
-
-    Args:
-        cwd: Directory to scan for existing bbox folders.
-
-    Returns:
-        Path to the next bbox directory (e.g. cwd/bbox1, cwd/bbox3).
-    """
-    n = 1
-    while (cwd / f"bbox{n}").exists():
-        n += 1
-    return cwd / f"bbox{n}"
+def bbox_slug(bbox) -> str:
+    """Deterministic 3-word slug from bbox coordinates."""
+    key = f"{bbox.west:.6f},{bbox.south:.6f},{bbox.east:.6f},{bbox.north:.6f}"
+    h = hashlib.sha256(key.encode()).digest()
+    n = len(_SLUG_WORDS)
+    return f"{_SLUG_WORDS[h[0] % n]}-{_SLUG_WORDS[h[1] % n]}-{_SLUG_WORDS[h[2] % n]}"
 
 
 def get_bbox_for_city(city_name: str) -> BoundingBox:
@@ -512,7 +537,7 @@ Examples:
     if args.output_dir is None:
         cwd = Path.cwd()
         if location_name == "Custom Area":
-            args.output_dir = next_bbox_dir(cwd)
+            args.output_dir = cwd / bbox_slug(bbox)
         else:
             normalized = location_name.lower().replace(" ", "_")
             args.output_dir = cwd / normalized
