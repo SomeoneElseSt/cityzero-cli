@@ -75,15 +75,13 @@ def get_mapillary_config() -> MapillaryConfig | None:
 class GridParams:
     """Grid cell sizes derived from a granularity level."""
     grid_cell_size: float
-    min_cell_size: float
 
 
 def granularity_to_grid_params(level: int) -> GridParams:
-    """Convert a 1–100 granularity level to grid and min cell sizes (log scale)."""
+    """Convert a 1–100 granularity level to a grid cell size (log scale)."""
     t = (level - GRANULARITY_MIN) / (GRANULARITY_MAX - GRANULARITY_MIN)
     grid = 0.5 * math.pow(0.0004, t)
-    min_cell = 0.25 * math.pow(0.0008, t)
-    return GridParams(grid_cell_size=round(grid, 6), min_cell_size=round(min_cell, 6))
+    return GridParams(grid_cell_size=round(grid, 6))
 
 
 # Predefined city bounding boxes (can be extended)

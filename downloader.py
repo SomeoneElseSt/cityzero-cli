@@ -220,13 +220,9 @@ class ImageDownloader:
         ]
 
     def _fetch_cell_images(self, cell: BoundingBox) -> List[Dict]:
-        """Fetch images for a cell, recursively splitting if the API limit is hit.
-
-        Stops recursing at MIN_CELL_SIZE
-        """
+        """Fetch images for a cell, recursively splitting if the API limit is hit or the cell is still large enough."""
         images = self.client.get_images_in_bbox(cell, limit=API_IMAGE_LIMIT)
-        cell_size = min(cell.east - cell.west, cell.north - cell.south)
-        if len(images) < API_IMAGE_LIMIT or cell_size <= self.grid.min_cell_size:
+        if len(images) < API_IMAGE_LIMIT:
             return images
         all_images = []
         for sub_cell in self._split_cell(cell):
