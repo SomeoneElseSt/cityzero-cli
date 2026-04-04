@@ -34,6 +34,7 @@ Usage:
 """
 
 import argparse
+import re
 import atexit
 import sys
 import time
@@ -288,7 +289,10 @@ def show_download_summary(
             if len(coords) >= 2:
                 heat_coords.append([coords[1], coords[0]])
     if show_preview:
-        print(f"\n📍 Generating coverage heatmap for {location_name}. Opening in browser...")
+        if is_interactive:
+            print(f"\n📍 Generating coverage heatmap for {location_name}. Opening in browser...")
+        else:
+            print(f"\n📍 Generating coverage heatmap of missing images for {location_name}. Opening in browser...")
         coverage_map = generate_map_preview(bbox, location_name, heat_coords)
         time.sleep(1.2)
         webbrowser.open(f"file://{coverage_map}")
@@ -382,7 +386,7 @@ def interactive_mode(show_preview: bool = True) -> tuple[BoundingBox, str]:
         bbox = get_bbox_for_city(selected)
 
     if show_preview:
-        print(f"\n📍 Generating map preview for {location_name}. Opening in browser...")
+        print(f"\n📍 Generating area preview for {location_name}. Opening in browser...")
         map_file = generate_map_preview(bbox, location_name)
         time.sleep(1.2)
         webbrowser.open(f"file://{map_file}")
@@ -419,6 +423,7 @@ Examples:
     cityzero --list-cities
         """
     )
+    parser._negative_number_matcher = re.compile(r'^-[\d.,-]+$')
 
     parser.add_argument('--city', type=str, help='City name (enables non-interactive mode)')
     parser.add_argument('--bbox', type=str, help='Custom bounding box as "west,south,east,north" (overrides --city)')
@@ -498,7 +503,7 @@ Examples:
         location_name = args.city
 
     if not is_interactive and args.preview and show_preview:
-        print(f"\n📍 Generating map preview for {location_name}. Opening in browser...")
+        print(f"\n📍 Generating area preview for {location_name}. Opening in browser...")
         map_file = generate_map_preview(bbox, location_name)
         time.sleep(1.2)
         webbrowser.open(f"file://{map_file}")
@@ -557,7 +562,7 @@ Examples:
             else args.granularity
         )
         downloader.grid = granularity_to_grid_params(granularity)
-        print(f"🔬 Granularity: {granularity}/{GRANULARITY_MAX} (grid={downloader.grid.grid_cell_size}°, min={downloader.grid.min_cell_size}°)")
+        print(f"🔬 Granularity: {granularity}/{GRANULARITY_MAX} (grid={downloader.grid.grid_cell_size}°)")
 
     confirmed, pending_images, user_cancelled = show_download_summary(
         downloader,
