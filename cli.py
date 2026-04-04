@@ -35,6 +35,7 @@ Usage:
 
 import argparse
 import hashlib
+import random
 import re
 import atexit
 import sys
@@ -48,7 +49,7 @@ import folium
 import folium.plugins
 import questionary
 
-from config import get_mapillary_config, BoundingBox, CITY_BBOXES, GRANULARITY_MIN, GRANULARITY_MAX, GRANULARITY_DEFAULT, granularity_to_grid_params, BBOX_SLUG_WORDS
+from config import get_mapillary_config, BoundingBox, CITY_BBOXES, GRANULARITY_MIN, GRANULARITY_MAX, GRANULARITY_DEFAULT, granularity_to_grid_params, BBOX_SLUG_WORDS, CITY_QUIPS
 from downloader import MapillaryClient, ImageDownloader
 from database import DiscoveryDB
 
@@ -353,6 +354,8 @@ def interactive_mode(show_preview: bool = True) -> tuple[BoundingBox, str]:
     print(f"  {F}╰{h}╯{R}")
     print()
 
+    print(f"💭 {random.choice(CITY_QUIPS)}\n")
+
     city_choices = [city.title() for city in sorted(CITY_BBOXES.keys())]
     city_choices.append("Custom bounding box...")
 
@@ -498,6 +501,8 @@ Examples:
         time.sleep(1.2)
         webbrowser.open(f"file://{map_file}")
         input("\nPress Enter to continue...")
+
+    print(f"\n💭 {random.choice(CITY_QUIPS)}")
 
     if args.output_dir is None:
         cwd = Path.cwd()

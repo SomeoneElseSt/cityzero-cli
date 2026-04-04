@@ -65,6 +65,35 @@ BBOX_SLUG_WORDS = [
     "wake","wave","weld","whirl","wind","wire","wood","zinc",
 ]
 
+CITY_QUIPS = [
+    "Somewhere in these pixels is a dog who had a great Tuesday.",
+    "A stranger once stood exactly where your images were captured. Wild.",
+    "Fun fact: most streets have never had a CLI tool care about them this much.",
+    "Pro tip: if you stare at enough street images, you achieve enlightenment. Probably",
+    "Pavement. Glorious, unsung, pavement.",
+    "Some people travel the world. You're downloading it. Respect.",
+    "The grid is a lie. But we're using it anyway.",
+    "These streets have seen things. You're about to see them too.",
+    "You could've gone outside instead. Bold choice.",
+    "This is technically fieldwork.",
+    "This data is free. The electricity to process is not. Carry on.",
+    "One of these coordinates is someone's commute.",
+    "A tree in one of these frames is older than the internet.",
+    "Every pixel is a tiny opinion about light.",
+    "Somewhere in these pictures is a perfect parking job immortalized.",
+    "At least one of the roads you find here leads to Rome.",
+    "Not all who wander are lost. Some are just rendering tiles.",
+    "There is no such thing as boring. You just don't have enough zoom.",
+    "Back to the concrete jungle(s).",
+    "You could also go outside and touch grass. Just saying.",
+    "You could be riding a bicycle like someone in these pictures.",
+    "Fifty shades of gray, but it's just municipal sidewalk planning.",
+    "This pixel is gray. The next pixel is gray. The system works.",
+    "A celebration of humanity's victory over grass. Sort of.",
+    "Your ancestors are watching you terminal-maxxing instead of touching grass. Worth it?",
+    "Your ancestors are watching you batch-download intersections instead of continuing the bloodline. Worth it?"
+    ]
+
 @dataclass
 class MapillaryConfig:
     """Mapillary API configuration."""
