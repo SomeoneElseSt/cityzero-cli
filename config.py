@@ -20,16 +20,50 @@ GPS_COORD_PRECISION = 10_000_000
 # Downloader / API constants
 MAX_RESOLUTION = 2048
 API_IMAGE_LIMIT = 2000
-# Note: 40 and 40 workers were found to be empirically fastest without running into I/O limits
+# Note: 50 and 50 workers were found to be empirically fastest without running into I/O limits
 # Feel free to increment until whatever your system can handle
-DISCOVERY_WORKERS = 40
-DOWNLOAD_WORKERS = 40
+DISCOVERY_WORKERS = 50
+DOWNLOAD_WORKERS = 50
 DB_COMMIT_BATCH = 50
 DISCOVERY_STALENESS_DAYS = 21
 GRANULARITY_MIN = 1
 GRANULARITY_MAX = 100
 GRANULARITY_DEFAULT = 25
 
+BBOX_SLUG_WORDS = [
+    "acid","agate","amber","anvil","arch","ark","ash","axe",
+    "badge","bark","basalt","bay","beam","birch","blade","bloom",
+    "bolt","bone","boulder","brace","braid","branch","brass","brick",
+    "bridge","brine","bronze","brook","brush","bulwark","cairn","cape",
+    "carbon","cave","cedar","chalk","chart","chest","chrome","cinder",
+    "circuit","cliff","cloak","cloud","coal","coast","cobalt","coil",
+    "compass","copper","coral","cord","core","crag","crane","crater",
+    "creek","crest","crown","crystal","current","dart","dawn","delta",
+    "depth","dew","dome","drift","dusk","dust","dye","echo",
+    "edge","ember","epoch","fang","fell","fen","fern","field",
+    "fig","film","fjord","flare","flint","flood","flow","foam",
+    "fold","forge","fork","fort","frost","fuel","gale","gap",
+    "gate","gem","gild","glacier","glade","glow","gorge","grain",
+    "granite","grove","gulf","haze","heath","helm","hemp","hill",
+    "hive","hollow","hook","horizon","hull","ice","inlet","iron",
+    "island","jade","jasper","jet","keep","kelp","key","knot",
+    "larch","lava","leaf","ledge","lens","lime","link","loch",
+    "lode","loop","lumen","magma","mantle","maple","marble","marsh",
+    "mast","mesa","mesh","mist","moat","moor","mortar","moss",
+    "mount","mud","nacre","needle","node","north","notch","oak",
+    "opal","orbit","ore","outcrop","pale","pass","patch","peak",
+    "peat","pine","pitch","pivot","plain","plume","pool","port",
+    "prism","probe","pulse","quartz","rail","range","rapid","reef",
+    "relay","ridge","rift","rim","river","rock","root","rope",
+    "ruin","rush","rust","salt","sand","scarp","schist","scree",
+    "seal","seam","shelf","shale","shore","silt","sinew","slab",
+    "slate","slope","smoke","soil","span","spire","spool","spur",
+    "stack","staff","stave","steel","stem","step","stone","storm",
+    "strand","stream","strut","summit","surge","swamp","sweep","swift",
+    "tarn","thorn","tide","timber","tine","tor","trace","trail",
+    "trench","tundra","vale","vault","vein","vent","verge","void",
+    "wake","wave","weld","whirl","wind","wire","wood","zinc",
+]
 
 @dataclass
 class MapillaryConfig:
@@ -82,42 +116,6 @@ def granularity_to_grid_params(level: int) -> GridParams:
     t = (level - GRANULARITY_MIN) / (GRANULARITY_MAX - GRANULARITY_MIN)
     grid = 0.5 * math.pow(0.0004, t)
     return GridParams(grid_cell_size=round(grid, 6))
-
-
-BBOX_SLUG_WORDS = [
-    "acid","agate","amber","anvil","arch","ark","ash","axe",
-    "badge","bark","basalt","bay","beam","birch","blade","bloom",
-    "bolt","bone","boulder","brace","braid","branch","brass","brick",
-    "bridge","brine","bronze","brook","brush","bulwark","cairn","cape",
-    "carbon","cave","cedar","chalk","chart","chest","chrome","cinder",
-    "circuit","cliff","cloak","cloud","coal","coast","cobalt","coil",
-    "compass","copper","coral","cord","core","crag","crane","crater",
-    "creek","crest","crown","crystal","current","dart","dawn","delta",
-    "depth","dew","dome","drift","dusk","dust","dye","echo",
-    "edge","ember","epoch","fang","fell","fen","fern","field",
-    "fig","film","fjord","flare","flint","flood","flow","foam",
-    "fold","forge","fork","fort","frost","fuel","gale","gap",
-    "gate","gem","gild","glacier","glade","glow","gorge","grain",
-    "granite","grove","gulf","haze","heath","helm","hemp","hill",
-    "hive","hollow","hook","horizon","hull","ice","inlet","iron",
-    "island","jade","jasper","jet","keep","kelp","key","knot",
-    "larch","lava","leaf","ledge","lens","lime","link","loch",
-    "lode","loop","lumen","magma","mantle","maple","marble","marsh",
-    "mast","mesa","mesh","mist","moat","moor","mortar","moss",
-    "mount","mud","nacre","needle","node","north","notch","oak",
-    "opal","orbit","ore","outcrop","pale","pass","patch","peak",
-    "peat","pine","pitch","pivot","plain","plume","pool","port",
-    "prism","probe","pulse","quartz","rail","range","rapid","reef",
-    "relay","ridge","rift","rim","river","rock","root","rope",
-    "ruin","rush","rust","salt","sand","scarp","schist","scree",
-    "seal","seam","shelf","shale","shore","silt","sinew","slab",
-    "slate","slope","smoke","soil","span","spire","spool","spur",
-    "stack","staff","stave","steel","stem","step","stone","storm",
-    "strand","stream","strut","summit","surge","swamp","sweep","swift",
-    "tarn","thorn","tide","timber","tine","tor","trace","trail",
-    "trench","tundra","vale","vault","vein","vent","verge","void",
-    "wake","wave","weld","whirl","wind","wire","wood","zinc",
-]
 
 # Predefined city bounding boxes (can be extended)
 CITY_BBOXES: dict[str, BoundingBox] = {
