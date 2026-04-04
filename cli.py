@@ -549,11 +549,8 @@ Examples:
     if not readme.exists():
         readme.write_text(
             f"# {location_name}\n\n"
-            "## Contents\n\n"
-            "| Path | Description |\n"
-            "| --- | --- |\n"
-            "| `images/` | Downloaded street-level images. Each file has GPS coordinates and altitude embedded in its EXIF metadata. |\n"
-            "| `images.db` | CityZero's internal state database — tracks which images have been discovered and downloaded. Do not delete or modify it; doing so will cause CityZero to re-download everything from scratch. |\n"
+            "images/     - Downloaded images (with GPS and altitude saved in EXIF metadata)\n"
+            "images.db   - CityZero state database. Do not delete or modify to avoid bugs.\n"
         )
 
     client = _client
